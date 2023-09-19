@@ -1,67 +1,61 @@
 #include <iostream>
-#include <cmath>
 using namespace std;
 
 
-// Функция которая проверяет простое число или нет
-bool prostoeChislo(int number) {
-    if (number <= 1){
-		return false;
-	 } 
-    if (number == 2 || number == 3){
-		return true;
-	 } 
-    if (number % 2 == 0 || number % 3 == 0){
-		return false;
-	 }
-	 if (static_cast<int>(sqrt(number)) == sqrt(number)){
-		return false;
-	 } 
+void blockElementsToEndArray(
+int*& arr, // Указатель на указатель на int
+int& size, // Адрес указателя
+const int* elementsAdd, // Обьявление указателя
+int elementsCount) {
+    int* nArray = new int[size + elementsCount]; // обьявление указателя и присвоение к нему новый массив
 
-    return true;
-}
-
-// Функция для удаления простых чисел из массива
-int* removePrimes(int* arr, int& size) {
-    int newSize = 0;
-
-    // Определение нового размера массива
     for (int i = 0; i < size; i++) {
-        if (!prostoeChislo(arr[i])) {
-            arr[newSize] = arr[i];
-            newSize++;
-        }
-    }
-    int* newArray = new int[newSize];
-    for (int i = 0; i < newSize; i++) {
-        newArray[i] = arr[i];
+        nArray[i] = arr[i];
     }
 
-    size = newSize; 
+    for (int i = 0; i < elementsCount; i++) { // Добавление элементов с блока
+        nArray[size + i] = elementsAdd[i];
+    }
 
-    return newArray; 
+    delete[] arr; // очистка памяти для избежание утечки памяти и оптимизации
+    arr = nArray; // присваем после выполнения функции
+    size += elementsCount; // присваиваем чтобы колличество элементов соответствовало
 }
 
 int main() {
+    int* dArray; // обьявление динамического массива который будет вначале
     int size;
-    cout << "Введите размер массива: ";
-    cin >> size;
 
-    int* dynamicArray = new int[size];
+   cout << "Введите размер изначального массива: ";
+   cin >> size;
 
-    cout << "Введите элементы массива:" << endl;
+   dArray = new int[size]; // Обьявление указателем на динамически выделенный массив целых чисел размером size.
+
+   cout << "Введите элементы изначального массива:" << endl;
     for (int i = 0; i < size; i++) {
-        cin >> dynamicArray[i];
+      cin >> dArray[i];
     }
 
-    int newSize = size; // Переменная для хранения нового размера массива
-    int* newArray = removePrimes(dynamicArray, newSize);
+   cout << "Введите количество элементов для добавления в конец: ";
+   
+	int elementsCount; // Не знаю почему он не находит эту переменную, хоть я ее и определял уже выше
+   cin >> elementsCount;
 
-    cout << "Массив без простых чисел:" << endl;
-    for (int i = 0; i < newSize; i++) {
-        cout << newArray[i] << " ";
+   int* elementsAdd = new int[elementsCount];
+   cout << "Введите элементы для добавления в конец:" << endl;
+   for (int i = 0; i < elementsCount; i++) {
+      cin >> elementsAdd[i];
     }
 
+    blockElementsToEndArray(dArray, size, elementsAdd, elementsCount); // вводим данные которые пойдут по указателями
 
-    return 0;
+   cout << "Массив после добавления элементов в конец: ";
+    for (int i = 0; i < size; i++) {
+      cout << dArray[i] << " ";
+    }
+
+    delete[] dArray; // чистка
+    delete[] elementsAdd;
+
+    return 0; // вывод при работе с указателями и динамической памятью не требуется копировать весь массив каждый раз, когда вы хотите добавить элементы. Вместо этого вы просто создаете новый массив с дополнительными элементами и копируете только необходимые данные.
 }
